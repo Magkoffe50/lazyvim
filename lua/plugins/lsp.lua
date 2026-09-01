@@ -3,6 +3,19 @@ return {
   opts = {
     inlay_hints = { enabled = false },
     servers = {
+      -- Большая TS-монорепа: tsserver по умолчанию получает 3072 МБ и на
+      -- первом запросе (gd/gr) может думать дольше, чем snacks ждёт ответа
+      -- (show_delay = 5000 мс) - тогда выскакивает пустое окно пикера "0/0".
+      vtsls = {
+        settings = {
+          typescript = {
+            tsserver = {
+              maxTsServerMemory = 8192,
+            },
+          },
+        },
+      },
+
       -- keymaps for every LSP server
       ["*"] = {
         -- stylua: ignore

@@ -19,6 +19,17 @@ return {
         grep = {
           regex = true,
         },
+
+        -- Пустая модалка "Lsp Definitions 0/0" - это не ошибка, а гонка:
+        -- snacks открывает окно, если источник не ответил за show_delay,
+        -- и после этого уже не может показать обычное "No results".
+        -- Медленный первый ответ tsserver в монорепе укладывался в 5 секунд
+        -- дефолта, поэтому окно и выскакивало пустым.
+        lsp_definitions = { show_delay = 20000 },
+        lsp_type_definitions = { show_delay = 20000 },
+        lsp_declarations = { show_delay = 20000 },
+        lsp_implementations = { show_delay = 20000 },
+        lsp_references = { show_delay = 20000 },
       },
     },
   },
