@@ -11,7 +11,24 @@ return {
         ignorecase = true,
         filename_bonus = true, -- совпадение в имени файла весит больше, чем в пути
       },
+      -- Показывать в поиске файлы из .gitignore и dotfiles (.env и т.п.).
+      -- node_modules и .git отрезаны отдельно: без этого ignored = true
+      -- затягивает десятки тысяч файлов и поиск становится бесполезным.
+      -- Разово переключается прямо в пикере: <a-i> - ignored, <a-h> - hidden.
+      hidden = true,
+      ignored = true,
+      exclude = { "node_modules", ".git" },
+
       sources = {
+        -- У source "files" в дефолтах snacks свои hidden = false /
+        -- ignored = false, и они перекрывают глобальные выше - поэтому
+        -- здесь их нужно повторить явно, иначе <leader>ff и <leader><leader>
+        -- продолжат прятать gitignored-файлы.
+        files = {
+          hidden = true,
+          ignored = true,
+        },
+
         -- grep - live-источник: запрос уходит прямо в ripgrep, поэтому
         -- fuzzy к нему не применяется. Раньше здесь стоял regex = false,
         -- то есть rg --fixed-strings - ровно тот "поиск только точных
