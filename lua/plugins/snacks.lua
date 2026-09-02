@@ -29,12 +29,13 @@ return {
           ignored = true,
         },
 
-        -- grep - live-источник: запрос уходит прямо в ripgrep, поэтому
-        -- fuzzy к нему не применяется. Раньше здесь стоял regex = false,
-        -- то есть rg --fixed-strings - ровно тот "поиск только точных
-        -- вхождений". Теперь работают обычные regex: web.*package, foo|bar.
+        -- grep ищет ТЕКСТОМ, не регуляркой: rg --fixed-strings.
+        -- Это намеренно и менять не надо. С regex = true запрос вроде
+        -- "dispatch(" или "arr[0]" - невалидное регулярное выражение,
+        -- ripgrep падает с "unclosed group" и пикер показывает 0/0.
+        -- Разово включить regex можно прямо в пикере: <a-r>.
         grep = {
-          regex = true,
+          regex = false,
         },
 
         -- Пустая модалка "Lsp Definitions 0/0" - это не ошибка, а гонка:
