@@ -1,3 +1,13 @@
+-- Jest adapter for neotest.
+--
+-- The adapter's own defaults are correct for this machine's jest projects, so
+-- nothing is overridden here:
+--   * command  -> nearest node_modules/.bin/jest (falls back to `jest` on PATH)
+--   * config   -> jest.config.{js,ts} when present, otherwise the "jest" key
+--                 in package.json (which is how ~/frontend/creative is set up)
+--   * root/cwd -> nearest package.json
+--   * a file is only claimed when that package.json actually declares `jest`,
+--     so vitest packages are left to neotest-vitest.
 return {
   { "nvim-neotest/neotest-jest" },
 
@@ -5,32 +15,7 @@ return {
     "nvim-neotest/neotest",
     opts = function(_, opts)
       opts.adapters = opts.adapters or {}
-
-      table.insert(
-        opts.adapters,
-        require("neotest-jest")({
-          -- choose the one you use:
-          jestCommand = "pnpm test --",
-          -- jestCommand = "yarn test --",
-          -- jestCommand = "npm test --",
-
-          -- Monorepo-aware: pick package root based on file path
-          cwd = function(file)
-            -- matches ".../packages/<pkg>/" and returns that directory
-            local pkg = file and file:match("(.*/packages/[^/]+/)")
-            return pkg or vim.fn.getcwd()
-          end,
-
-          -- Monorepo-aware: pick jest config inside that package
-          jestConfigFile = function(file)
-            local pkg = file and file:match("(.*/packages/[^/]+/)")
-            if pkg then
-              return pkg .. "jest.config.ts" -- change to jest.config.js if needed
-            end
-            return vim.fn.getcwd() .. "/jest.config.ts"
-          end,
-        })
-      )
+      table.insert(opts.adapters, require("neotest-jest")({}))
     end,
   },
 }
