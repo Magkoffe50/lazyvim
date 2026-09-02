@@ -1,3 +1,32 @@
+-- Нестрогий текстовый grep без регулярок со стороны пользователя.
+--
+-- Ввод считается ОБЫЧНЫМ ТЕКСТОМ: все спецсимволы регулярок экранируются,
+-- поэтому "dispatch(", "arr[0]" и "a.*b" ищутся буквально. Пробел между
+-- словами означает "что угодно между ними": "dispatch user" находит
+-- dispatch(setUser(...)). Так поиск остаётся условным, но писать регулярки
+-- не нужно и синтаксических ошибок ripgrep больше не бывает.
+--
+-- Побочный эффект: аргументы вида "-t lua" внутри запроса больше не
+-- распознаются - они становятся частью искомого текста.
+local function grep_pattern(search)
+  local parts = {}
+  for word in search:gmatch("%S+") do
+    parts[#parts + 1] = (word:gsub("[\\%.%+%*%?%(%)%[%]%{%}%^%$|]", "\\%0"))
+  end
+  return table.concat(parts, ".*")
+end
+
+local function grep_finder(opts, ctx)
+  local typed = ctx.filter.search or ""
+  ctx.filter.search = grep_pattern(typed)
+  local ok, finder = pcall(require("snacks.picker.source.grep").grep, opts, ctx)
+  ctx.filter.search = typed
+  if not ok then
+    return function() end
+  end
+  return finder
+end
+
 return {
   "folke/snacks.nvim",
   opts = {
@@ -29,13 +58,16 @@ return {
           ignored = true,
         },
 
-        -- grep ищет ТЕКСТОМ, не регуляркой: rg --fixed-strings.
-        -- Это намеренно и менять не надо. С regex = true запрос вроде
-        -- "dispatch(" или "arr[0]" - невалидное регулярное выражение,
-        -- ripgrep падает с "unclosed group" и пикер показывает 0/0.
-        -- Разово включить regex можно прямо в пикере: <a-r>.
+        -- regex = true нужно, чтобы ripgrep не получил --fixed-strings:
+        -- экранированием занимается grep_pattern выше, а ".*" между словами
+        -- работает только в regex-режиме.
         grep = {
-          regex = false,
+          regex = true,
+          finder = grep_finder,
+        },
+        grep_buffers = {
+          regex = true,
+          finder = grep_finder,
         },
 
         -- Пустая модалка "Lsp Definitions 0/0" - это не ошибка, а гонка:
