@@ -128,8 +128,8 @@ function M.apply(hl)
     ["@diff.minus"] = { fg = p.error },
 
     ["@lsp.type.keyword"] = { fg = p.keyword },
-    ["@lsp.type.function"] = { fg = p.func },
-    ["@lsp.type.method"] = { fg = p.func },
+    ["@lsp.type.function"] = {},
+    ["@lsp.type.method"] = {},
     ["@lsp.type.decorator"] = { fg = p.func },
     ["@lsp.type.string"] = { fg = p.string },
     ["@lsp.type.number"] = { fg = p.number },
