@@ -120,6 +120,15 @@ function M.apply(hl)
     ["@tag.builtin"] = { fg = p.tag },
     ["@tag.delimiter"] = { fg = p.tag },
     ["@tag.attribute"] = { fg = p.attribute },
+
+    -- Группы с суффиксом языка приоритетнее общих: @tag.tsx перебивает @tag.
+    -- tokyonight задаёт их красным/синим, поэтому JSX-компоненты выходили
+    -- красными, хотя @tag выше уже жёлтый. Список полный - других
+    -- language-suffixed групп в tokyonight для tsx/js нет.
+    ["@tag.tsx"] = { fg = p.tag },
+    ["@tag.javascript"] = { fg = p.tag },
+    ["@tag.delimiter.tsx"] = { fg = p.tag },
+    ["@constructor.tsx"] = { fg = p.func },
     ["@markup.link"] = { fg = p.link, italic = true },
     ["@markup.link.url"] = { fg = p.link, italic = true },
     ["@markup.heading"] = { fg = p.keyword, bold = true },
