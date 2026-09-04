@@ -130,11 +130,22 @@ function M.apply(hl)
     ["@tag.delimiter.tsx"] = { fg = p.tag },
     ["@constructor.tsx"] = { fg = p.func },
     ["@markup.link"] = { fg = p.link, italic = true },
+    ["@markup.link.label"] = { fg = p.string },
     ["@markup.link.url"] = { fg = p.link, italic = true },
     ["@markup.heading"] = { fg = p.keyword, bold = true },
     ["@markup.raw"] = { fg = p.string },
     ["@diff.plus"] = { fg = p.string },
     ["@diff.minus"] = { fg = p.error },
+
+    -- Markdown. Тот же случай, что и с @tag.tsx: у tokyonight эти группы
+    -- заданы с суффиксом языка и потому перебивают общие @markup.* выше.
+    -- Кроме цвета они тащат ФОН: инлайн-код шёл синим по серому, заголовки -
+    -- с тёмной подложкой. bg = "NONE" убирает подложку.
+    ["@markup.raw.markdown_inline"] = { fg = p.keyword, bg = "NONE" },
+    ["@markup.link.label.markdown"] = { fg = p.string },
+    ["@markup.link.label.markdown_inline"] = { fg = p.string },
+    ["@markup.list.markdown"] = { fg = p.keyword, bold = true },
+    ["@punctuation.special.markdown"] = { fg = p.keyword },
 
     ["@lsp.type.keyword"] = { fg = p.keyword },
     ["@lsp.type.function"] = {},
@@ -159,6 +170,12 @@ function M.apply(hl)
     DiagnosticInfo = { fg = p.info },
     DiagnosticHint = { fg = p.hint },
   }
+
+  -- Заголовки всех шести уровней: tokyonight генерирует их циклом, каждому
+  -- свой цвет и своя подложка. Здесь они приводятся к одному виду.
+  for i = 1, 6 do
+    groups["@markup.heading." .. i .. ".markdown"] = { fg = p.keyword, bold = true, bg = "NONE" }
+  end
 
   for group, spec in pairs(groups) do
     hl[group] = spec
